@@ -11,7 +11,8 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const User = require("./models/user.js");
-// const User = require("./models/medicine.js");
+const User = require("./models/medicine.js");
+
 const indexRouter = require("./routes/index.js");
 const userRouter = require("./routes/user.js");
 const dashboardRoutes = require('./routes/dashboard');
