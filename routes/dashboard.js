@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Medicine = require('../models/Medicine');
+const Medicine = require('../models/medicine');
 const { ensureAuthenticated } = require('../middleware/auth');
 const { renderDashboardPage } = require('../utils/dashboardhelper');
 const dayjs = require('dayjs');
