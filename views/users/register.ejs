@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+
+<!-- Background Image -->
+<div class="background-image"></div>
+
+<!-- Registration Form -->
+<div class="container d-flex align-items-center justify-content-center vh-100">
+  <div class="card shadow-lg p-4 register-card">
+    <h2 class="text-center mb-4 text-pinkish">Create Your MediVault Account</h2>
+    <form action="/register" method="POST"  novalidate class="needs-validation">
+      <div class="mb-3">
+        <label for="fullname" class="form-label fw-bold">Full Name</label>
+        <input type="text" class="form-control" id="fullname" name="username" placeholder="Enter full name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label fw-bold">Email address</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label fw-bold">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+      </div>
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label fw-bold">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+      </div>
+      <button type="submit" class="btn btn-custom-pink w-100 fw-bold">Register</button>
+      <p class="text-center mt-3">
+        Already have an account? 
+        <a href="/login" class="text-decoration-none text-pinkish">Login</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+
+<script>(() => {
+                'use strict'
+              
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                const forms = document.querySelectorAll('.needs-validation')
+              
+                // Loop over them and prevent submission
+                Array.from(forms).forEach(form => {
+                  form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+              
+                    form.classList.add('was-validated');
+                  }, false);
+                });
+              })();</script>
+
+        </div>
+
+    </div>

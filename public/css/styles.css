@@ -1,0 +1,112 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.background-image {
+  background-image: url('/images/logo 2.png');
+  background-size: cover;
+  background-position: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+.content-overlay {
+  height: 100vh;
+  padding: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.logo-img {
+  max-width: 150px;
+  height: auto;
+}
+
+.text-pinkish {
+  color: #D291BC;
+}
+
+.animated-title {
+  font-size: 3rem;
+  color: #D291BC;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 0.15em solid #D291BC;
+  animation: typing 6s steps(20, end) infinite, blink-caret 1s step-end infinite;
+}
+
+@keyframes typing {
+  0% { width: 0; }
+  50% { width: 100%; }
+  100% { width: 0; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: #D291BC; }
+}
+
+.animated-tagline {
+  font-size: 1.25rem;
+  color: #D291BC;
+  animation: pulseTagline 4s ease-in-out infinite;
+}
+
+@keyframes pulseTagline {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+.btn-custom-pink {
+  background-color: #D291BC;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
+
+.btn-custom-pink:hover {
+  background-color: #C078AA;
+  color: white;
+}
+
+.animate-feature {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.animate-feature:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-icon {
+  text-decoration: none;
+}
+
+.hamburger {
+  display: inline-block;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  background-color: #D291BC;
+  transition: all 0.3s ease;
+}

@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<!-- Background -->
+<div class="background-image"></div>
+
+<!-- Login Form Container -->
+<div class="container d-flex align-items-center justify-content-center vh-100">
+  <div class="card shadow-lg p-4 login-card">
+    <h2 class="text-center mb-4 text-pinkish">MediVault Login</h2>
+    <form action="/login" method="POST" novalidate class="needs-validation">
+      <div class="mb-3">
+        <label for="email" class="form-label fw-bold">Email address</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label fw-bold">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+      <button type="submit" class="btn btn-custom-pink w-100 fw-bold">Login</button>
+      <p class="text-center mt-3">
+        Don't have an account?
+        <a href="/register" class="text-decoration-none text-pinkish">Register</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>(() => {
+                'use strict'
+              
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                const forms = document.querySelectorAll('.needs-validation')
+              
+                // Loop over them and prevent submission
+                Array.from(forms).forEach(form => {
+                  form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+              
+                    form.classList.add('was-validated');
+                  }, false);
+                });
+              })();</script>
+
+        </div>
+
+    </div>
