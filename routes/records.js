@@ -9,10 +9,16 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 100 * 1024 },  // 100KB max
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    const isValid = allowedTypes.test(file.mimetype);
-    cb(isValid ? null : new Error('Only image files are allowed!'), isValid);
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+  const isValid = allowedTypes.includes(file.mimetype);
+
+  if (isValid) {
+    cb(null, true);
+  } else {
+    req.fileValidationError = 'Only image files are allowed!';
+    cb(null, false);  // Do not throw an error directly
   }
+}
 });
 
 // Helper: combine date+time and check if appointment is in future
@@ -76,7 +82,10 @@ router.post('/add', ensureAuthenticated, upload.single('image'), async (req, res
       req.flash('error', 'Appointment time must be in the future.');
       return res.redirect('/records');
     }
-
+if (req.fileValidationError) {
+  req.flash('error', req.fileValidationError);
+  return res.redirect('/records');
+}
     const newRecord = new Record({
       doctor,
       date,
