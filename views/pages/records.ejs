@@ -198,6 +198,19 @@
       height: auto;
       border-radius: 12px;
     }
+      .add-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #eecff3;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 50%;
+      padding: 15px 20px;
+      font-size: 24px;
+    }
+
   </style>
 </head>
 
@@ -349,10 +362,11 @@
 
 
                   <!-- Floating Add Button -->
-                  <button id="addRecordBtn" type="button" title="Add Record" data-bs-toggle="modal"
-                    data-bs-target="#addRecordModal">
-                    +
-                  </button>
+                  //  <button id="addRecordBtn" type="button" title="Add Record" data-bs-toggle="modal"
+                  //    data-bs-target="#addRecordModal">
+                  //    +
+                  //  </button>
+                   <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal" title="Add Records">➕</button>
 
                   <!-- Add Record Modal -->
                   <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel"

@@ -76,22 +76,18 @@
 </head>
 <body>
   <div class="overlay">
-    <!-- Top Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">MediVault</a>
+        <a href="/" class="btn btn-outline-primary">Home</a>
         <div class="d-flex align-items-center">
-        <%= typeof userName !== 'undefined' ? userName : 'John Doe' %>
-
-
-          <button class="btn btn-outline-danger fw-bold" onclick="window.location.href='/logout'">Logout</button>
+          <span class="me-3 fw-bold">👤 <%= userName  %></span>
+          <button class="btn btn-outline-danger" onclick="window.location.href='/logout'">Logout</button>
         </div>
       </div>
     </nav>
 
-     
-
-
+    
     <!-- Main Layout -->
     <div class="container-fluid">
       <div class="row">
