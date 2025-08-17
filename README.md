@@ -21,7 +21,7 @@ This project demonstrates **backend development, authentication, error handling,
 - **MongoDB + Mongoose** → Database for users, medicines, and prescriptions  
 - **EJS** → Templating engine for dynamic server-side rendering  
 - **Passport.js (or session handling)** → For authentication & login persistence  
-- **GitHub + Vercel/Render** → Version control & deployment  
+- **GitHub + Render** → Version control & deployment  
 
 ---
 
