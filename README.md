@@ -5,10 +5,6 @@ It allows users to manage prescriptions, track medicines, and organize health re
 
 This project demonstrates **backend development, authentication, error handling, and database integration skills**.
 
-## 🌐 Live Demo
-You can explore the deployed app here:  
-👉 [MyPersonalMeal Live on Render](https://atmypersonalmeal-sc64.onrender.com/)
-
 ## 🚀 Features
 - 🔐 **User Authentication**: Register/login system with secure password storage.  
 - 💊 **Medicine Management**: Add, edit, and delete medicines with full CRUD functionality.  
