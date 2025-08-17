@@ -5,7 +5,9 @@ It allows users to manage prescriptions, track medicines, and organize health re
 
 This project demonstrates **backend development, authentication, error handling, and database integration skills**.
 
----
+## 🌐 Live Demo
+You can explore the deployed app here:  
+👉 [MyPersonalMeal Live on Render](https://atmypersonalmeal-sc64.onrender.com/)
 
 ## 🚀 Features
 - 🔐 **User Authentication**: Register/login system with secure password storage.  
@@ -14,16 +16,12 @@ This project demonstrates **backend development, authentication, error handling,
 - ⚡ **Error Handling**: Fixed critical bugs such as “medicine not defined” by restructuring controllers.  
 - 🎨 **Templating with EJS**: Clean and simple UI rendered server-side.  
 
----
-
 ## 🛠 Tech Stack
 - **Node.js + Express** → Backend framework for APIs and server logic  
 - **MongoDB + Mongoose** → Database for users, medicines, and prescriptions  
 - **EJS** → Templating engine for dynamic server-side rendering  
 - **Passport.js (or session handling)** → For authentication & login persistence  
 - **GitHub + Render** → Version control & deployment  
-
----
 
 ## 📂 Project Structure
 MediVault/
@@ -35,15 +33,10 @@ MediVault/
 │── app.js # Main Express server
 │── README.md # Project documentation
 
-
----
-
 ## 🩺 Key Fixes Implemented
 - ✅ Resolved **“medicine not defined” bug** → Refactored medicine controller & routes.  
 - ✅ Improved error handling → Standardized error responses across routes.  
 - ✅ Optimized data schema → Linked medicines properly with user accounts.  
-
----
 
 ## ⚡ Setup & Run Locally
 ```bash
