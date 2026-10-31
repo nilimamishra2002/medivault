@@ -207,13 +207,23 @@
 </div>
 
 
-          <!-- Alerts -->
-          <h4 class="mt-5 fw-bold">🔔 Alerts</h4>
-          <% alerts.forEach(alert => { %>
-            <div class="alert alert-custom mt-2">
-              <%= alert %>
-            </div>
-          <% }) %>
+<!-- Alerts -->
+<h4 class="mt-5 fw-bold">🔔 Alerts</h4>
+
+<% alerts.forEach((alert, index) => { %>
+  <div class="alert alert-custom alert-dismissible fade show mt-2"
+       role="alert"
+       id="dashboard-alert-<%= index %>">
+
+    <%= alert %>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close">
+    </button>
+  </div>
+<% }) %>
         </div>
       </div>
     </div>
