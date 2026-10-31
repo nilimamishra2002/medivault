@@ -110,3 +110,40 @@ body, html {
   background-color: #D291BC;
   transition: all 0.3s ease;
 }
+
+
+.low-stock-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.low-stock-close {
+    border: none;
+    background: transparent;
+    color: #842029;
+
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 1;
+
+    cursor: pointer;
+    padding: 0 3px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+    opacity: 0.65;
+}
+
+.low-stock-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}

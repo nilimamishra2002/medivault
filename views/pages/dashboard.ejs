@@ -171,15 +171,18 @@
 
             <div class="alert-wrapper">
             <% if (med.stock <= 5) { %>
-              <div class="alert alert-danger alert-dismissible fade show mt-2 p-1"
+<div class="alert alert-danger low-stock-alert mt-2"
      role="alert">
-  🔴 Low stock: only <%= med.stock %> left!
+
+  <span>🔴 Low stock: only <%= med.stock %> left!</span>
 
   <button type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close">
+          class="low-stock-close"
+          aria-label="Dismiss alert"
+          onclick="this.closest('.low-stock-alert').remove()">
+    &times;
   </button>
+
 </div>
                <% } else { %>
     <div class="invisible-placeholder"></div>
