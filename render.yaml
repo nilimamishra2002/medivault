@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: medivault
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: ATLASDB_URL
+        sync: false
+      - key: SECRET
+        generateValue: true

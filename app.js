@@ -62,9 +62,9 @@ app.use(express.json());
 
 app.use(methodOverride("_method"));
 
-// If running behind a proxy (Render, Heroku, etc), enable trust proxy
-// This is required to make req.secure and secure cookies work correctly.
-if (process.env.TRUST_PROXY === '1') {
+// Render terminates HTTPS at its proxy. Trust the first proxy hop in production
+// so Express can correctly detect HTTPS and issue secure session cookies.
+if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === '1') {
   app.set('trust proxy', 1);
 }
 
@@ -91,7 +91,7 @@ const sessionOptions = {
     // cookie settings
     httpOnly: true,
     // In production, use secure cookies (HTTPS). Controlled by env var below.
-    secure: process.env.COOKIE_SECURE === '1', 
+    secure: process.env.COOKIE_SECURE === '1' || process.env.NODE_ENV === 'production', 
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   }
 };
@@ -117,6 +117,15 @@ app.use((req, res, next) => {
   res.locals.currUser = req.user || null;
   res.locals.user = req.user || null; // if your views expect `user`
   next();
+});
+
+// Public health check for Render. The server starts only after MongoDB connects.
+app.get('/health', (req, res) => {
+  const databaseReady = mongoose.connection.readyState === 1;
+  res.status(databaseReady ? 200 : 503).json({
+    status: databaseReady ? 'ok' : 'unavailable',
+    database: databaseReady ? 'connected' : 'disconnected'
+  });
 });
 
 // --- Routes ---
