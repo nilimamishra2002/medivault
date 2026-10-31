@@ -133,7 +133,9 @@
                           N/A
                         <% } %>
                       </td>
-                      <td><%= med.isTakenToday ? '✅ Taken' : '❌ Not Taken' %></td>
+                      <td class="medicine-status">
+  <%= med.isTakenToday ? '✅ Taken' : '❌ Not Taken' %>
+</td>
                       <td>
   <% if (!med.isTakenToday) { %>
     <% const allTimesPassed = med.timeStatus?.every(t => t.isTimePassed); %>
@@ -441,9 +443,14 @@
               body: JSON.stringify({ id: medId })
             });
 
-            if (response.ok) {
-              button.parentElement.innerHTML = '<span class="text-success">✔ Completed</span>';
-            } else {
+          if (response.ok) {
+  const row = button.closest('tr');
+
+  row.querySelector('.medicine-status').textContent = '✅ Taken';
+
+  button.parentElement.innerHTML =
+    '<span class="text-success">✔ Completed</span>';
+}else {
               alert("❌ Failed to mark as taken. Please try again.");
             }
           } catch (error) {

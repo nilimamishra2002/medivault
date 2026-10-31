@@ -5,6 +5,10 @@ const { ensureAuthenticated } = require('../middleware/auth');
 const { renderDashboardPage } = require('../utils/dashboardhelper');
 const dayjs = require('dayjs');
 
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+
+dayjs.extend(customParseFormat);
+
 // GET: Dashboard route
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {
@@ -166,51 +170,109 @@ router.post('/edit/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+
 // POST: Mark as taken
 router.post('/mark-taken/:id', ensureAuthenticated, async (req, res) => {
   try {
-    const medicine = await Medicine.findById(req.params.id);
+    // Find medicine belonging to the logged-in user
+    const medicine = await Medicine.findOne({
+      _id: req.params.id,
+      userId: req.user._id
+    });
+
     if (!medicine) {
       return res.status(404).send('Medicine not found');
     }
 
-    const today = dayjs().startOf('day');
-    const now = dayjs();
+    const today = dayjs();
+    const todayDateStr = today.format('YYYY-MM-DD');
 
-    const scheduledToday = dayjs(medicine.startDate).isSameOrBefore(today, 'day') &&
-                           dayjs(medicine.endDate).isSameOrAfter(today, 'day');
+    // Validate medicine schedule
+    const scheduledToday =
+      !dayjs(medicine.startDate).isAfter(today, 'day') &&
+      !dayjs(medicine.endDate).isBefore(today, 'day');
 
     if (!scheduledToday) {
       return res.status(400).send('Medicine is not scheduled for today');
     }
 
-    const todayDateStr = today.format('YYYY-MM-DD');
-    const scheduledTimes = medicine.times.map(time =>
-      dayjs(`${todayDateStr} ${time}`, 'YYYY-MM-DD HH:mm')
-    );
-    const latestTime = scheduledTimes.sort((a, b) => b.valueOf() - a.valueOf())[0];
-
-    if (now.isBefore(latestTime)) {
-      return res.status(400).send('Cannot mark as taken before last scheduled time has passed');
+    if (!Array.isArray(medicine.times) || medicine.times.length === 0) {
+      return res.status(400).send('No scheduled medicine times found');
     }
 
-    if (!medicine.takenDates) medicine.takenDates = [];
+    // Parse both 24-hour and 12-hour time formats
+    const scheduledTimes = medicine.times.map(time => {
+      const formats = [
+        'YYYY-MM-DD H:mm',
+        'YYYY-MM-DD HH:mm',
+        'YYYY-MM-DD h:mm A',
+        'YYYY-MM-DD hh:mm A'
+      ];
 
-    const alreadyTaken = medicine.takenDates.some(d =>
-      dayjs(d).isSame(today, 'day')
-    );
+      return dayjs(
+        `${todayDateStr} ${time}`,
+        formats,
+        true
+      );
+    });
 
-    if (!alreadyTaken) {
-      medicine.takenDates.push(now.toDate());
-      await medicine.save();
+    if (scheduledTimes.some(time => !time.isValid())) {
+      return res.status(400).send('Invalid scheduled time format');
     }
 
-    res.status(200).send('Marked as taken');
+    const latestTime = scheduledTimes.reduce((latest, current) =>
+      current.isAfter(latest) ? current : latest
+    );
+
+    // Preserve the existing rule: all scheduled times must have passed
+    if (today.isBefore(latestTime)) {
+      return res.status(400).send(
+        'Cannot mark as taken before the last scheduled time has passed'
+      );
+    }
+
+    // Ensure takenLogs exists
+    if (!Array.isArray(medicine.takenLogs)) {
+      medicine.takenLogs = [];
+    }
+
+    // Store each scheduled intake against today's date
+    for (const time of medicine.times) {
+      const alreadyTaken = medicine.takenLogs.some(log =>
+        log.date === todayDateStr && log.time === time
+      );
+
+      if (!alreadyTaken) {
+        medicine.takenLogs.push({
+          date: todayDateStr,
+          time: time
+        });
+      }
+    }
+
+    // Persist changes in MongoDB
+    await medicine.save();
+
+    console.log(
+      `Medicine ${medicine.name} marked as taken for ${todayDateStr}`
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Medicine marked as taken',
+      date: todayDateStr
+    });
+
   } catch (error) {
-    console.error('Error marking as taken:', error);
-    res.status(500).send('Server error');
+    console.error('Error marking medicine as taken:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
   }
 });
+
 
 // POST: Delete medicine
 router.post('/delete/:id', ensureAuthenticated, async (req, res) => {
