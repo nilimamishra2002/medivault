@@ -77,9 +77,13 @@ async function renderDashboardPage(req, res, flashError = null, flashSuccess = n
       });
 
       // Existing takenDates logic
-      const isTakenToday = med.takenDates?.some(d =>
-        dayjs(d).isSame(today, 'day')
-      ) || false;
+const isTakenToday = med.times.length > 0 &&
+  med.times.every(time =>
+    (med.takenLogs || []).some(log =>
+      log.date === today.format('YYYY-MM-DD') &&
+      log.time === time
+    )
+  );
 
       return {
         ...med,

@@ -61,12 +61,15 @@ const medicineSchema = new mongoose.Schema({
   stock: Number,
   reminder: Number,
 
-  takenLogs: [
+takenLogs: {
+  type: [
     {
-      date: String, // "2025-05-26"
-      time: String  // "8:00 AM"
+      date: String,
+      time: String
     }
   ],
+  default: []
+},
 
   userId: {
     type: mongoose.Schema.Types.ObjectId,

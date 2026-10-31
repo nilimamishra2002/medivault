@@ -1,10 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MediVault Dashboard</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <style>
     body {
       background: url('/images/logo 3.jpg') no-repeat center center fixed;
@@ -16,31 +19,6 @@
       min-height: 100vh;
     }
 
-    .sidebar {
-      background-color: #f3c4d7;
-      min-height: 100vh;
-    }
-
-    .nav-link {
-      font-weight: bold;
-      color: #000;
-    }
-
-    .nav-link:hover {
-      text-decoration: underline;
-    }
-
-    .card-status {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .alert-custom {
-      background-color: #ffe0ec;
-      color: #910041;
-    }
-
     .navbar {
       background-color: #f3c4d7;
     }
@@ -48,6 +26,119 @@
     .navbar-brand {
       font-weight: bold;
       color: #910041;
+    }
+
+    .main-content {
+      width: 100%;
+    }
+
+    .section-heading {
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #252525;
+    }
+
+    /* Symmetrical medicine card grid */
+    .medicine-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      align-items: stretch;
+      grid-auto-rows: 1fr;
+      width: 100%;
+    }
+
+    .medicine-card {
+      height: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid #dedede;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .medicine-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.12);
+    }
+
+    .medicine-card .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .medicine-name {
+      font-size: 21px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .medicine-time {
+      margin-bottom: 10px;
+    }
+
+    .medicine-card-status {
+      margin-bottom: 12px;
+    }
+
+    .medicine-alerts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .medicine-alerts .alert {
+      margin: 0;
+      padding: 9px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .medicine-alerts .alert-text {
+      overflow-wrap: anywhere;
+    }
+
+    .medicine-alerts .btn-close {
+      flex-shrink: 0;
+      padding: 7px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: flex-end;
+    }
+
+    .alert-custom {
+      background-color: #ffe0ec;
+      color: #910041;
+      border: 1px solid #ffc1d8;
+    }
+
+    .dashboard-flash {
+      margin: 15px 0 25px;
+    }
+
+    .dashboard-flash .alert {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+    }
+
+    .dashboard-flash .alert-message {
+      flex: 1;
     }
 
     .add-btn {
@@ -59,448 +150,577 @@
       font-weight: bold;
       border: none;
       border-radius: 50%;
-      padding: 15px 20px;
-      font-size: 24px;
+      width: 65px;
+      height: 65px;
+      font-size: 25px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      z-index: 1000;
     }
 
-    .alert-wrapper {
-  min-height: 40px; /* or however tall your alert typically is */
-}
+    .add-btn:hover {
+      background-color: #dfb6eb;
+    }
 
-.invisible-placeholder {
-  height: 40px;
-  visibility: hidden;
-}
+    .btn-close {
+      opacity: 0.7;
+    }
 
+    .btn-close:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 992px) {
+      .medicine-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 576px) {
+      .medicine-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-content {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .add-btn {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="overlay">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-      <div class="container-fluid">
-        <a href="/" class="btn btn-outline-primary">Home</a>
-        <div class="d-flex align-items-center">
-          <span class="me-3 fw-bold">👤 <%= userName  %></span>
-          <button class="btn btn-outline-danger" onclick="window.location.href='/logout'">Logout</button>
-        </div>
-      </div>
-    </nav>
+<div class="overlay">
 
-    
-    <!-- Main Layout -->
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <!-- <div class="col-md-2 sidebar py-4">
-          <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a class="nav-link" href="#">Dashboard</a></li>
-            <li class="nav-item mb-2"><a class="nav-link" href="#">Add Medicine</a></li>
-            <li class="nav-item mb-2"><a class="nav-link" href="#">Family Members</a></li>
-            <li class="nav-item"><a class="nav-link text-danger" href="/logout">Logout</a></li>
-          </ul>
-        </div> -->
+      <a href="/" class="btn btn-outline-primary">Home</a>
 
-        <!-- Main Content -->
-        <div class="col-md-10 py-4">
-          <!-- Today's Medicines -->
-          <h3 class="mb-4 fw-bold">🩺 Today's Medicines</h3>
-          <% if (todayMeds.length === 0) { %>
-            <div class="alert alert-info">No medicines scheduled for today.</div>
-          <% } else { %>
-            <div class="table-responsive mb-5">
-              <table class="table table-bordered">
-                <thead class="table-light">
-                  <tr>
-                    <th>Name</th>
-                    <th>Dosage</th>
-                    <th>Times</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% todayMeds.forEach(med => { %>
-                    <tr>
-                      <td><%= med.name %></td>
-                      <td><%= med.dosage %></td>
-                      <td>
-                        <% if (Array.isArray(med.times)) { %>
-                          <% med.times.forEach(time => { %>
-                            <div><%= time %></div>
-                          <% }) %>
-                        <% } else { %>
-                          N/A
-                        <% } %>
-                      </td>
-                      <td class="medicine-status">
-  <%= med.isTakenToday ? '✅ Taken' : '❌ Not Taken' %>
-</td>
-                      <td>
-  <% if (!med.isTakenToday) { %>
-    <% const allTimesPassed = med.timeStatus?.every(t => t.isTimePassed); %>
-    <% if (allTimesPassed) { %>
-      <button class="btn btn-primary btn-sm mark-btn" data-id="<%= med._id %>">Mark as Taken</button>
-    <% } else { %>
-      <span class="text-muted">⏳ Wait for scheduled time</span>
-    <% } %>
-  <% } else { %>
-    <span class="text-success">✔ Completed</span>
-  <% } %>
-</td>
+      <div class="d-flex align-items-center">
+        <span class="me-3 fw-bold">👤 <%= userName %></span>
+        <button class="btn btn-outline-danger"
+                onclick="window.location.href='/logout'">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
 
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
+  <div class="container-fluid">
+    <div class="row">
+
+      <main class="col-12 col-md-10 py-4 main-content">
+
+        <!-- Dismissible success/error notifications -->
+        <div class="dashboard-flash">
+
+          <% if (error_msg) { %>
+            <div class="alert alert-danger alert-dismissible fade show"
+                 role="alert">
+              <span class="alert-message"><%= error_msg %></span>
+              <button type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"></button>
             </div>
           <% } %>
 
-          <!-- Medicine Schedule -->
-         <!-- Medicine Schedule -->
-<h3 class="mb-4 fw-bold">📅 Full Medicine Schedule</h3>
-<div class="row">
-  <% medicines.forEach(med => { %>
-    <div class="col-md-4 col-sm-6 col-12 mb-3">
-      <div class="card shadow-sm">
-        <div class="card-body card-status">
-          <div>
-            <h5><%= med.name %></h5>
-            <p class="mb-1">⏰ <%= med.time || (med.times ? med.times.join(', ') : '') %></p>
-            <span>Status: <%= med.taken ? '✅ Taken' : '❌ Not Taken' %></span>
-
-            <div class="alert-wrapper">
-            <% if (med.stock <= 5) { %>
-<div class="alert alert-danger low-stock-alert mt-2"
-     role="alert">
-
-  <span>🔴 Low stock: only <%= med.stock %> left!</span>
-
-</div>
-               <% } else { %>
-    <div class="invisible-placeholder"></div>
-  <% } %>
-</div>
-
-            
-
-            
-
-           <% if (med.expiryDate && dayjs(med.expiryDate).diff(dayjs(), 'day') <= med.reminder) { %>
-  <div class="alert alert-warning mt-2 p-1">
-    ⚠ Expiring soon on <%= dayjs(med.expiryDate).format('MMM D YYYY') %>
-  </div>
-<% } %>
- 
-          </div>
-
-          <div class="d-flex align-items-center gap-2 mt-2">
-  <a href="/dashboard/edit/<%= med._id %>" class="btn btn-warning btn-sm">Edit</a>
-
-  <form action="/dashboard/delete/<%= med._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this medicine?');">
-    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-  </form>
-</div>
+          <% if (success_msg) { %>
+            <div class="alert alert-success alert-dismissible fade show"
+                 role="alert">
+              <span class="alert-message"><%= success_msg %></span>
+              <button type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"></button>
+            </div>
+          <% } %>
 
         </div>
-      </div>
-    </div>
-  <% }) %>
-</div>
+
+        <!-- Today's Medicines -->
+        <h3 class="section-heading">🩺 Today's Medicines</h3>
+
+        <% if (todayMeds.length === 0) { %>
+
+          <div class="alert alert-info">
+            No medicines scheduled for today.
+          </div>
+
+        <% } else { %>
+
+          <div class="table-responsive mb-5">
+            <table class="table table-bordered table-hover align-middle">
+
+              <thead class="table-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Dosage</th>
+                  <th>Times</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <% todayMeds.forEach(med => { %>
+
+                  <tr data-medicine-row="<%= med._id %>">
+
+                    <td><%= med.name %></td>
+
+                    <td><%= med.dosage %></td>
+
+                    <td>
+                      <% if (Array.isArray(med.times)) { %>
+                        <% med.times.forEach(time => { %>
+                          <div><%= time %></div>
+                        <% }) %>
+                      <% } else { %>
+                        N/A
+                      <% } %>
+                    </td>
+
+                    <td class="medicine-status">
+                      <%= med.isTakenToday ? '✅ Taken' : '❌ Not Taken' %>
+                    </td>
+
+                    <td class="medicine-action">
+
+                      <% if (!med.isTakenToday) { %>
+
+                        <% const allTimesPassed =
+                          med.timeStatus?.every(t => t.isTimePassed); %>
+
+                        <% if (allTimesPassed) { %>
+
+                          <button class="btn btn-primary btn-sm mark-btn"
+                                  data-id="<%= med._id %>">
+                            Mark as Taken
+                          </button>
+
+                        <% } else { %>
+
+                          <span class="text-muted">
+                            ⏳ Wait for scheduled time
+                          </span>
+
+                        <% } %>
+
+                      <% } else { %>
+
+                        <span class="text-success">✔ Completed</span>
+
+                      <% } %>
+
+                    </td>
+                  </tr>
+
+                <% }) %>
+
+              </tbody>
+            </table>
+          </div>
+
+        <% } %>
 
 
-<!-- Alerts -->
-<h4 class="mt-5 fw-bold">🔔 Alerts</h4>
+        <!-- Full Medicine Schedule -->
+        <h3 class="section-heading">📅 Full Medicine Schedule</h3>
 
-<% alerts.forEach((alert, index) => { %>
-  <div class="alert alert-custom alert-dismissible fade show mt-2"
-       role="alert"
-       id="dashboard-alert-<%= index %>">
+        <div class="medicine-grid">
 
-    <%= alert %>
+          <% medicines.forEach(med => { %>
 
-    <button type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close">
-    </button>
-  </div>
-<% }) %>
+            <%
+              const todayDate = dayjs().format('YYYY-MM-DD');
+
+              const isTakenToday =
+                Array.isArray(med.times) &&
+                med.times.length > 0 &&
+                med.times.every(time =>
+                  (med.takenLogs || []).some(log =>
+                    log.date === todayDate &&
+                    log.time === time
+                  )
+                );
+            %>
+
+            <div class="medicine-card">
+
+              <div class="card-body">
+
+                <h5 class="medicine-name">
+                  <%= med.name %>
+                </h5>
+
+                <p class="medicine-time">
+                  ⏰ <%= med.times ? med.times.join(', ') : 'N/A' %>
+                </p>
+
+                <div class="medicine-card-status"
+                     id="card-status-<%= med._id %>">
+
+                  Status:
+                  <%= isTakenToday ? '✅ Taken' : '❌ Not Taken' %>
+
+                </div>
+
+                <div class="medicine-alerts">
+
+                  <% if (med.stock <= 5) { %>
+
+                    <div class="alert alert-danger alert-dismissible fade show low-stock-alert"
+                         role="alert">
+
+                      <span class="alert-text">
+                        🔴 Low stock: only <%= med.stock %> left!
+                      </span>
+
+                      <button type="button"
+                              class="btn-close"
+                              data-bs-dismiss="alert"
+                              aria-label="Dismiss low stock alert">
+                      </button>
+
+                    </div>
+
+                  <% } %>
+
+
+                  <% if (
+                    med.expiryDate &&
+                    dayjs(med.expiryDate).isValid() &&
+                    dayjs(med.expiryDate).diff(dayjs(), 'day') >= 0 &&
+                    dayjs(med.expiryDate).diff(dayjs(), 'day') <= med.reminder
+                  ) { %>
+
+                    <div class="alert alert-warning alert-dismissible fade show"
+                         role="alert">
+
+                      <span class="alert-text">
+                        ⚠ Expiring soon on
+                        <%= dayjs(med.expiryDate).format('MMM D YYYY') %>
+                      </span>
+
+                      <button type="button"
+                              class="btn-close"
+                              data-bs-dismiss="alert"
+                              aria-label="Dismiss expiry alert">
+                      </button>
+
+                    </div>
+
+                  <% } %>
+
+                </div>
+
+                <!-- Card actions -->
+                <div class="card-actions">
+
+                  <a href="/dashboard/edit/<%= med._id %>"
+                     class="btn btn-warning btn-sm">
+                    Edit
+                  </a>
+
+                  <form action="/dashboard/delete/<%= med._id %>"
+                        method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this medicine?');">
+
+                    <button type="submit"
+                            class="btn btn-danger btn-sm">
+                      Delete
+                    </button>
+
+                  </form>
+
+                </div>
+
+              </div>
+            </div>
+
+          <% }) %>
+
         </div>
-      </div>
+
+
+        <!-- Dashboard Alerts -->
+        <h4 class="mt-5 mb-3 fw-bold">🔔 Alerts</h4>
+
+        <div id="dashboard-alerts">
+
+          <% alerts.forEach((alert, index) => { %>
+
+            <div class="alert alert-custom alert-dismissible fade show mt-2"
+                 role="alert"
+                 id="dashboard-alert-<%= index %>">
+
+              <span class="alert-message">
+                <%= alert %>
+              </span>
+
+              <button type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Dismiss alert">
+              </button>
+
+            </div>
+
+          <% }) %>
+
+        </div>
+
+      </main>
     </div>
-
-    <!-- Add Medicine Floating Button -->
-    <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addMedicineModal" title="Add Medicine">➕</button>
-
-    <!-- Add Medicine Modal -->
+  </div>
 
 
-    <!-- <div class="modal fade" id="addMedicineModal" tabindex="-1" aria-labelledby="addMedicineModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <form class="modal-content needs-validation" action="/dashboard/add-medicine" method="POST" novalidate>
-          <div class="modal-header">
-            <h5 class="modal-title" id="addMedicineModalLabel">➕ Add Medicine</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-
-       
-
-
-
-            <div class="mb-2">
-              <label class="form-label">Medicine Name</label>
-              <input type="text" class="form-control" name="name" required />
-              <div class="invalid-feedback">Please enter the medicine name.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Dosage</label>
-              <input type="text" class="form-control" placeholder="e.g. 1 tablet" name="dosage" required />
-              <div class="invalid-feedback">Please enter the dosage.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Intake Times</label>
-              <input type="text" class="form-control" placeholder="e.g. 08:00, 20:00" name="times" required />
-              <div class="invalid-feedback">Please enter intake times.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Start Date</label>
-              <input type="date" class="form-control" name="startDate" required />
-              <div class="invalid-feedback">Please enter a start date.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">End Date</label>
-              <input type="date" class="form-control" name="endDate" required />
-              <div class="invalid-feedback">Please enter an end date.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Expiry Date</label>
-              <input type="date" class="form-control" name="expiryDate" required />
-              <div class="invalid-feedback">Please enter the expiry date.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Stock Count</label>
-              <input type="number" class="form-control" name="stock" required />
-              <div class="invalid-feedback">Please enter the stock count.</div>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Reminder Before (Days)</label>
-              <input type="number" class="form-control" placeholder="e.g. 3" name="reminder" required />
-              <div class="invalid-feedback">Please specify reminder days.</div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-primary">Save</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div> -->
+  <!-- Floating Add Medicine Button -->
+  <button class="add-btn"
+          data-bs-toggle="modal"
+          data-bs-target="#addMedicineModal"
+          title="Add Medicine">
+    ➕
+  </button>
 
 
   <!-- Add Medicine Modal -->
-<div class="modal fade" id="addMedicineModal" tabindex="-1" aria-labelledby="addMedicineModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content needs-validation" action="/dashboard/add-medicine" method="POST" novalidate>
-      <div class="modal-header">
-        <h5 class="modal-title" id="addMedicineModalLabel">➕ Add Medicine</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
+  <div class="modal fade"
+       id="addMedicineModal"
+       tabindex="-1"
+       aria-labelledby="addMedicineModalLabel"
+       aria-hidden="true">
 
-        <!-- Flash messages -->
-        <% if (error_msg && error_msg.length > 0) { %>
-          <div class="alert alert-danger">
-            <%= error_msg[0] %>
-          </div>
-        <% } %>
-        <% if (success_msg && success_msg.length > 0) { %>
-          <div class="alert alert-success">
-            <%= success_msg[0] %>
-          </div>
-        <% } %>
+    <div class="modal-dialog">
 
-        <div class="mb-2">
-          <label class="form-label">Medicine Name</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            name="name" 
-            required
-            value="<%= typeof name !== 'undefined' ? name : '' %>"
-          />
-          <div class="invalid-feedback">Please enter the medicine name.</div>
+      <form class="modal-content needs-validation"
+            action="/dashboard/add-medicine"
+            method="POST"
+            novalidate>
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="addMedicineModalLabel">
+            ➕ Add Medicine
+          </h5>
+
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal">
+          </button>
         </div>
-        <div class="mb-2">
-          <label class="form-label">Dosage</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="e.g. 1 tablet" 
-            name="dosage" 
-            required
-            value="<%= typeof dosage !== 'undefined' ? dosage : '' %>"
-          />
-          <div class="invalid-feedback">Please enter the dosage.</div>
+
+        <div class="modal-body">
+
+          <div class="mb-2">
+            <label class="form-label">Medicine Name</label>
+            <input type="text"
+                   class="form-control"
+                   name="name"
+                   required>
+            <div class="invalid-feedback">
+              Please enter the medicine name.
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Dosage</label>
+            <input type="text"
+                   class="form-control"
+                   placeholder="e.g. 1 tablet"
+                   name="dosage"
+                   required>
+            <div class="invalid-feedback">
+              Please enter the dosage.
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Intake Times</label>
+            <input type="text"
+                   class="form-control"
+                   placeholder="e.g. 08:00, 20:00"
+                   name="times"
+                   required>
+            <div class="invalid-feedback">
+              Please enter intake times.
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Start Date</label>
+            <input type="date"
+                   class="form-control"
+                   name="startDate"
+                   required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">End Date</label>
+            <input type="date"
+                   class="form-control"
+                   name="endDate"
+                   required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Expiry Date</label>
+            <input type="date"
+                   class="form-control"
+                   name="expiryDate"
+                   required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Stock Count</label>
+            <input type="number"
+                   class="form-control"
+                   name="stock"
+                   min="0"
+                   required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Reminder Before (Days)</label>
+            <input type="number"
+                   class="form-control"
+                   name="reminder"
+                   min="0"
+                   placeholder="e.g. 3"
+                   required>
+          </div>
+
         </div>
-        <div class="mb-2">
-          <label class="form-label">Intake Times</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="e.g. 08:00, 20:00" 
-            name="times" 
-            required
-            value="<%= typeof times !== 'undefined' ? times : '' %>"
-          />
-          <div class="invalid-feedback">Please enter intake times.</div>
+
+        <div class="modal-footer">
+
+          <button type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal">
+            Cancel
+          </button>
+
+          <button type="submit" class="btn btn-primary">
+            Save Medicine
+          </button>
+
         </div>
-        <div class="mb-2">
-          <label class="form-label">Start Date</label>
-          <input 
-            type="date" 
-            class="form-control" 
-            name="startDate" 
-            required
-            value="<%= typeof startDate !== 'undefined' ? startDate : '' %>"
-          />
-          <div class="invalid-feedback">Please enter a start date.</div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">End Date</label>
-          <input 
-            type="date" 
-            class="form-control" 
-            name="endDate" 
-            required
-            value="<%= typeof endDate !== 'undefined' ? endDate : '' %>"
-          />
-          <div class="invalid-feedback">Please enter an end date.</div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Expiry Date</label>
-          <input 
-            type="date" 
-            class="form-control" 
-            name="expiryDate" 
-            required
-            value="<%= typeof expiryDate !== 'undefined' ? expiryDate : '' %>"
-          />
-          <div class="invalid-feedback">Please enter the expiry date.</div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Stock Count</label>
-          <input 
-            type="number" 
-            class="form-control" 
-            name="stock" 
-            required
-            value="<%= typeof stock !== 'undefined' ? stock : '' %>"
-          />
-          <div class="invalid-feedback">Please enter the stock count.</div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Reminder Before (Days)</label>
-          <input 
-            type="number" 
-            class="form-control" 
-            placeholder="e.g. 3" 
-            name="reminder" 
-            required
-            value="<%= typeof reminder !== 'undefined' ? reminder : '' %>"
-          />
-          <div class="invalid-feedback">Please specify reminder days.</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary">Save</button>
-      </div>
-    </form>
+
+      </form>
+    </div>
   </div>
-</div>
 
 
+  <!-- Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+
+  <!-- Form Validation -->
   <script>
     (() => {
       'use strict';
+
       const forms = document.querySelectorAll('.needs-validation');
+
       Array.from(forms).forEach(form => {
+
         form.addEventListener('submit', event => {
+
           if (!form.checkValidity()) {
             event.preventDefault();
             event.stopPropagation();
           }
+
           form.classList.add('was-validated');
+
         }, false);
+
       });
+
     })();
   </script>
 
+
+  <!-- Mark Medicine as Taken -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const buttons = document.querySelectorAll(".mark-btn");
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const buttons = document.querySelectorAll('.mark-btn');
+
       buttons.forEach(button => {
-        button.addEventListener("click", async () => {
+
+        button.addEventListener('click', async () => {
+
           const medId = button.dataset.id;
+
+          button.disabled = true;
+          button.textContent = 'Saving...';
+
           try {
-            const response = await fetch(`/dashboard/mark-taken/${medId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: JSON.stringify({ id: medId })
-            });
 
-          if (response.ok) {
-  const row = button.closest('tr');
+            const response = await fetch(
+              `/dashboard/mark-taken/${medId}`,
+              {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json'
+                }
+              }
+            );
 
-  row.querySelector('.medicine-status').textContent = '✅ Taken';
-
-  button.parentElement.innerHTML =
-    '<span class="text-success">✔ Completed</span>';
-}else {
-              alert("❌ Failed to mark as taken. Please try again.");
+            if (!response.ok) {
+              const message = await response.text();
+              throw new Error(message || 'Unable to update medicine status');
             }
+
+            // Update today's medicine table
+            const row = document.querySelector(
+              `[data-medicine-row="${medId}"]`
+            );
+
+            if (row) {
+
+              row.querySelector('.medicine-status').textContent =
+                '✅ Taken';
+
+              row.querySelector('.medicine-action').innerHTML =
+                '<span class="text-success">✔ Completed</span>';
+
+            }
+
+            // Update corresponding medicine card
+            const cardStatus = document.getElementById(
+              `card-status-${medId}`
+            );
+
+            if (cardStatus) {
+              cardStatus.textContent = 'Status: ✅ Taken';
+            }
+
           } catch (error) {
-            console.error(error);
-            alert("⚠ An error occurred. Please try again later.");
+
+            console.error('Mark taken error:', error);
+
+            alert(error.message || 'Something went wrong.');
+
+            button.disabled = false;
+            button.textContent = 'Mark as Taken';
+
           }
+
         });
+
       });
+
     });
   </script>
 
-</body>
-<!-- Dismissible Flash Messages -->
-<% if (error_msg) { %>
-  <div class="alert alert-danger alert-dismissible fade show mx-3"
-       role="alert">
-    <%= error_msg %>
-
-    <button type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close">
-    </button>
-  </div>
-<% } %>
-
-<% if (success_msg) { %>
-  <div class="alert alert-success alert-dismissible fade show mx-3"
-       role="alert">
-    <%= success_msg %>
-
-    <button type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close">
-    </button>
-  </div>
-<% } %>
-
+</div>
 </body>
 </html>

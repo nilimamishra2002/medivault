@@ -171,105 +171,54 @@ router.post('/edit/:id', ensureAuthenticated, async (req, res) => {
 });
 
 
-// POST: Mark as taken
+// POST: Mark medicine as taken
 router.post('/mark-taken/:id', ensureAuthenticated, async (req, res) => {
   try {
-    // Find medicine belonging to the logged-in user
-    const medicine = await Medicine.findOne({
-      _id: req.params.id,
-      userId: req.user._id
-    });
+    const medicine = await Medicine.findById(req.params.id);
 
     if (!medicine) {
       return res.status(404).send('Medicine not found');
     }
 
-    const today = dayjs();
-    const todayDateStr = today.format('YYYY-MM-DD');
-
-    // Validate medicine schedule
-    const scheduledToday =
-      !dayjs(medicine.startDate).isAfter(today, 'day') &&
-      !dayjs(medicine.endDate).isBefore(today, 'day');
-
-    if (!scheduledToday) {
-      return res.status(400).send('Medicine is not scheduled for today');
+    if (!medicine.userId.equals(req.user._id)) {
+      return res.status(403).send('Unauthorized');
     }
 
-    if (!Array.isArray(medicine.times) || medicine.times.length === 0) {
-      return res.status(400).send('No scheduled medicine times found');
-    }
+    const today = dayjs().format('YYYY-MM-DD');
 
-    // Parse both 24-hour and 12-hour time formats
-    const scheduledTimes = medicine.times.map(time => {
-      const formats = [
-        'YYYY-MM-DD H:mm',
-        'YYYY-MM-DD HH:mm',
-        'YYYY-MM-DD h:mm A',
-        'YYYY-MM-DD hh:mm A'
-      ];
-
-      return dayjs(
-        `${todayDateStr} ${time}`,
-        formats,
-        true
-      );
-    });
-
-    if (scheduledTimes.some(time => !time.isValid())) {
-      return res.status(400).send('Invalid scheduled time format');
-    }
-
-    const latestTime = scheduledTimes.reduce((latest, current) =>
-      current.isAfter(latest) ? current : latest
-    );
-
-    // Preserve the existing rule: all scheduled times must have passed
-    if (today.isBefore(latestTime)) {
-      return res.status(400).send(
-        'Cannot mark as taken before the last scheduled time has passed'
-      );
-    }
-
-    // Ensure takenLogs exists
-    if (!Array.isArray(medicine.takenLogs)) {
+    if (!medicine.takenLogs) {
       medicine.takenLogs = [];
     }
 
-    // Store each scheduled intake against today's date
-    for (const time of medicine.times) {
-      const alreadyTaken = medicine.takenLogs.some(log =>
-        log.date === todayDateStr && log.time === time
-      );
-
-      if (!alreadyTaken) {
-        medicine.takenLogs.push({
-          date: todayDateStr,
-          time: time
-        });
-      }
-    }
-
-    // Persist changes in MongoDB
-    await medicine.save();
-
-    console.log(
-      `Medicine ${medicine.name} marked as taken for ${todayDateStr}`
+    // Check whether all scheduled doses are already recorded
+    const alreadyTaken = medicine.times.every(time =>
+      medicine.takenLogs.some(log =>
+        log.date === today && log.time === time
+      )
     );
 
-    return res.status(200).json({
-      success: true,
-      message: 'Medicine marked as taken',
-      date: todayDateStr
-    });
+    if (!alreadyTaken) {
+      medicine.times.forEach(time => {
+        const exists = medicine.takenLogs.some(log =>
+          log.date === today && log.time === time
+        );
+
+        if (!exists) {
+          medicine.takenLogs.push({
+            date: today,
+            time: time
+          });
+        }
+      });
+
+      await medicine.save();
+    }
+
+    return res.status(200).send('Marked as taken');
 
   } catch (error) {
     console.error('Error marking medicine as taken:', error);
-
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).send('Server error');
   }
 });
 
