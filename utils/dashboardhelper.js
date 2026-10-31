@@ -41,19 +41,18 @@ function generateAlerts(meds) {
  * Renders the dashboard page with all required data
  */
 
+
 async function renderDashboardPage(req, res, flashError = null, flashSuccess = null) {
   try {
     const userId = req.user._id;
-    const userName = req.user.username || 'John Doe';
-
     const today = dayjs().startOf('day');
-    const todayDate = today.format('YYYY-MM-DD');
     const now = dayjs();
 
+    // Fetch ALL saved medicines belonging to this user
     const allMeds = await Medicine.find({ userId }).lean();
 
     // Filter medicines scheduled for today
-    const medicines = allMeds.filter(med => {
+    const activeMedicines = allMeds.filter(med => {
       const start = dayjs(med.startDate).startOf('day');
       const end = dayjs(med.endDate).endOf('day');
 
@@ -61,65 +60,43 @@ async function renderDashboardPage(req, res, flashError = null, flashSuccess = n
              today.isSameOrBefore(end);
     });
 
-    // Calculate medicine-taking status using takenLogs
-    const medicinesWithStatus = medicines.map(med => {
+    // Build today's medicine status
+    const todayMeds = activeMedicines.map(med => {
+      const todayDate = today.format('YYYY-MM-DD');
 
-      const takenLogs = med.takenLogs || [];
-      const times = med.times || [];
-
-      const isTakenToday = times.length > 0 &&
-        times.every(time =>
-          takenLogs.some(log =>
-            log.date === todayDate &&
-            log.time === time
-          )
-        );
-
-      return {
-        ...med,
-        isTakenToday,
-        taken: isTakenToday
-      };
-    });
-
-    // Prepare today's medicine schedule
-    const todayMeds = medicinesWithStatus.map(med => {
-
-      const timeStatus = (med.times || []).map(time => {
-
-        const formats = [
-          'YYYY-MM-DD H:mm',
-          'YYYY-MM-DD HH:mm',
-          'YYYY-MM-DD h:mm A',
-          'YYYY-MM-DD hh:mm A'
-        ];
-
+      const timeStatus = med.times.map(time => {
         const timeMoment = dayjs(
           `${todayDate} ${time}`,
-          formats,
-          true
+          'YYYY-MM-DD HH:mm'
         );
 
         return {
           time,
-          isTimePassed:
-            timeMoment.isValid() &&
-            now.isSameOrAfter(timeMoment)
+          isTimePassed: now.isSameOrAfter(timeMoment)
         };
       });
 
+      // Existing takenDates logic
+      const isTakenToday = med.takenDates?.some(d =>
+        dayjs(d).isSame(today, 'day')
+      ) || false;
+
       return {
         ...med,
+        isTakenToday,
         timeStatus
       };
     });
 
     res.render('pages/dashboard', {
-      userName,
+      userName: req.user.username,
       todayMeds,
+      medicines: allMeds,
       dayjs,
-      medicines: medicinesWithStatus,
-      alerts: generateAlerts(medicinesWithStatus),
+
+      // Alerts based on medicines currently active
+      alerts: generateAlerts(activeMedicines),
+
       error_msg: flashError || req.flash('error_msg')[0] || null,
       success_msg: flashSuccess || req.flash('success_msg')[0] || null
     });
@@ -129,6 +106,7 @@ async function renderDashboardPage(req, res, flashError = null, flashSuccess = n
     res.status(500).send('Server error');
   }
 }
+
 
 
 module.exports = {

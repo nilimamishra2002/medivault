@@ -171,10 +171,16 @@
 
             <div class="alert-wrapper">
             <% if (med.stock <= 5) { %>
-              <div class="alert alert-danger mt-2 p-1">
-                🔴 Low stock: only <%= med.stock %> left!
-              </div>
+              <div class="alert alert-danger alert-dismissible fade show mt-2 p-1"
+     role="alert">
+  🔴 Low stock: only <%= med.stock %> left!
 
+  <button type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close">
+  </button>
+</div>
                <% } else { %>
     <div class="invisible-placeholder"></div>
   <% } %>
@@ -473,12 +479,32 @@
   </script>
 
 </body>
+<!-- Dismissible Flash Messages -->
 <% if (error_msg) { %>
-  <div class="alert alert-danger"><%= error_msg %></div>
+  <div class="alert alert-danger alert-dismissible fade show mx-3"
+       role="alert">
+    <%= error_msg %>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close">
+    </button>
+  </div>
 <% } %>
 
 <% if (success_msg) { %>
-  <div class="alert alert-success"><%= success_msg %></div>
+  <div class="alert alert-success alert-dismissible fade show mx-3"
+       role="alert">
+    <%= success_msg %>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close">
+    </button>
+  </div>
 <% } %>
 
+</body>
 </html>
